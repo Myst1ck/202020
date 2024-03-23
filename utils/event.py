@@ -1,5 +1,4 @@
-from threading import Thread
-from typing import Callable, List
+from typing import Any, Callable, List
 
 
 class Event:
@@ -12,6 +11,10 @@ class Event:
     def unsubscribe(self, observer: Callable) -> None:
         self.observers.remove(observer)
 
-    def notify(self, *args, **kwargs) -> None:
+    def notify(self, *args, **kwargs) -> List[Any]:
+        results: List[Any] = []
+
         for observer in self.observers:
-            observer(*args, **kwargs)
+            results.append(observer(*args, **kwargs))
+
+        return results

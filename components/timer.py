@@ -11,9 +11,10 @@ class Timer:
         on_exit.subscribe(self.stop)
 
         self.on_change: Event = Event()
+        self.on_end: Event = Event()
 
         self.time: int = 0
-        self._timer: Thread = Thread(target=lambda: self._reduce())
+        self._timer: Thread = None
 
         self.active: bool = False
 
@@ -24,7 +25,7 @@ class Timer:
         self.on_change.notify(self.time)
 
     def start(self) -> None:
-        self.on_change.notify(self.time)
+        self._timer = Thread(target=lambda: self._reduce())
 
     def activate(self) -> None:
         self.active = True
@@ -52,5 +53,8 @@ class Timer:
             self.on_change.notify(self.time)
 
             sleep(1)
+
+        if self.time == 0:
+            self.on_end.notify()
 
         self._timer = Thread(target=lambda: self._reduce())

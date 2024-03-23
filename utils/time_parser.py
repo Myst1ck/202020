@@ -16,6 +16,6 @@ class TimeParser:
         time_string: str = ''
 
         for time_part in time_parts[::-1]:
-            time_string += str(time_part) + ':'
+            time_string += f"{str(time_part) if time_part >= 10 else f'0{time_part}'}:"
 
         return time_string[:-1]
