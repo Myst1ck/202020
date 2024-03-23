@@ -1,9 +1,9 @@
-from notifier import Notifier
+from bootsrapper import Bootsrapper
 
 
 def main():
-    notifier: Notifier = Notifier()
-    notifier.start()
+    bootsrapper: Bootsrapper = Bootsrapper()
+    bootsrapper.bootstrap()
 
 
 if __name__ == '__main__':
