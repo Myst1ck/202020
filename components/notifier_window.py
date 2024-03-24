@@ -1,15 +1,15 @@
 from logging import warning
 from tkinter import Button, Text, Tk, END
-from typing import List
-from config.configuration import ICON_PATH, MINIMIZE_INSTEAD_OF_CLOSING, WINDOW_SIZE
-import ctypes
+from typing import List, Literal
+from config.configuration import BG_COLOR, ICON_PATH, WINDOW_SIZE
 
 from utils.event import Event
+from utils.settings_reader import SettingsReader
 from utils.time_parser import TimeParser
 
 
-class Window:
-    def __init__(self, on_start: Event, on_exit: Event, on_end: Event) -> None:
+class NotifierWindow:
+    def __init__(self, on_start: Event, on_exit: Event, on_end: Event, settings_reader: SettingsReader) -> None:
         self.time_parser: TimeParser = TimeParser()
 
         self.on_window_hide: Event = Event()
@@ -19,6 +19,10 @@ class Window:
 
         self.on_change_timer_status: Event = Event()
         self.on_change_timer_status.subscribe(self.change_state_button)
+
+        self.on_settings_show: Event = Event()
+
+        self.settings_reader = settings_reader
 
         self.on_end = on_end
 
@@ -43,7 +47,7 @@ class Window:
         root.title("20/20/20 Rule Notifier")
         root.iconbitmap(ICON_PATH)
 
-        root.config(bg='#F0F0F0')
+        root.config(bg=BG_COLOR)
 
         return root
 
@@ -75,6 +79,11 @@ class Window:
         )
         buttons.append(skip_button)
 
+        configuration_button: Button = Button(
+            self.root, command=lambda: self.on_settings_show.notify(), text="Settings"
+        )
+        buttons.append(configuration_button)
+
         for index, button in enumerate(buttons):
             button.place(relx=(index / len(buttons)), rely=0.75,
                          anchor='w', relwidth=(1 / len(buttons)), relheight=0.5)
@@ -83,7 +92,7 @@ class Window:
 
     def change_closing_protocol(self) -> None:
         self.root.protocol(
-            "WM_DELETE_WINDOW", self.on_window_hide.notify if MINIMIZE_INSTEAD_OF_CLOSING else self.on_exit.notify)
+            "WM_DELETE_WINDOW", self.on_window_hide.notify if self.settings_reader.get_value('MINIMIZE_INSTEAD_OF_CLOSING') else self.on_exit.notify)
 
     def timer_change(self, seconds: int) -> None:
         self.textbox.config(state='normal')
@@ -110,9 +119,12 @@ class Window:
         except (RuntimeError):
             warning('Destroying TK root on different thread.')
 
-    def change_state_button(self) -> None:
+    def change_state_button(self, value: Literal['Continue', 'Stop'] = None) -> None:
         continue_button = self.buttons[1]
 
-        current_text: str = continue_button.cget('text')
-        continue_button.config(
-            text='Continue' if current_text != 'Continue' else 'Stop')
+        if not value:
+            current_text: str = continue_button.cget('text')
+            continue_button.config(
+                text='Continue' if current_text != 'Continue' else 'Stop')
+        else:
+            continue_button.config(text=value)

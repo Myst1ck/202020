@@ -1,20 +1,10 @@
-from typing import Dict, Tuple
-
-from utils.timer_status import TimerStatus
-
+from typing import Tuple
 
 WINDOW_SIZE: Tuple[int, int] = (500, 200)
+SETTINGS_WINDOW_SIZE: Tuple[int, int] = (300, 500)
 
 ICON_PATH: str = r"D:\Codes\Codes\202020 Rule\assets\icon.ico"
 SOUND_PATH: str = r"D:\Codes\Codes\202020 Rule\assets\notification.wav"
+SETTINGS_PATH: str = r"D:\Codes\Codes\202020 Rule\config\settings.json"
 
-MINIMIZE_INSTEAD_OF_CLOSING: bool = False
-
-DURATIONS: Dict[TimerStatus, int] = {
-    TimerStatus.WORKING: 10,
-    TimerStatus.BREAK: 20
-}
-
-SHOULD_SHOW_WINDOW_ON_TIMER_END: bool = True
-
-SHOULD_START_ON_STARTUP: bool = True
+BG_COLOR: str = '#F0F0F0'

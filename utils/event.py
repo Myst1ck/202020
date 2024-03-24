@@ -6,10 +6,12 @@ class Event:
         self.observers: List[Callable] = []
 
     def subscribe(self, observer: Callable) -> None:
-        self.observers.append(observer)
+        if observer not in self.observers:
+            self.observers.append(observer)
 
     def unsubscribe(self, observer: Callable) -> None:
-        self.observers.remove(observer)
+        if observer in self.observers:
+            self.observers.remove(observer)
 
     def notify(self, *args, **kwargs) -> List[Any]:
         results: List[Any] = []
